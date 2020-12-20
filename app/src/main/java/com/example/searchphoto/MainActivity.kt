@@ -35,12 +35,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var flickrResponse:FlickrResponse
     lateinit var flickrPhotos: FlickrPhotos
     lateinit var listFlickrPhotos: List<FlickrPhoto>
-    lateinit var searchhistory: ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         manager = StaggeredGridLayoutManager(NUM_COLUMNS, LinearLayout.VERTICAL)
         binding.recyclerView.apply {
@@ -48,29 +48,6 @@ class MainActivity : AppCompatActivity() {
             adapter = staggeredRecyclerViewAdapter
         }
 
-//        binding.recyclerView.itemAnimator = null
-//        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-//                    isScrolling = true
-//                }
-//            }
-//
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//
-//                val totalItems = manager.itemCount
-//                val currentItems = manager.childCount
-//                val scrollOutItems = manager.findFirstVisibleItemPositions(null)
-//
-//                if (isScrolling && (scrollOutItems[0] + currentItems >= totalItems)) {
-//
-//                    Log.i("TAG", "$totalItems $currentItems (${scrollOutItems[0]}, ${scrollOutItems[1]})")
-//                    loadNextPage()
-//                }
-//            }
-//        })
         binding.scrollview.viewTreeObserver.addOnScrollChangedListener(object : ViewTreeObserver.OnScrollChangedListener {
             override fun onScrollChanged() {
                 if (binding.scrollview.getChildAt(0).bottom <= (binding.scrollview.height + binding.scrollview.scrollY)) {
@@ -96,7 +73,6 @@ class MainActivity : AppCompatActivity() {
                 binding.searchET.clearFocus()
                 if(binding.searchET.text.isNotEmpty()) {
                     fetchFlickrResponse(binding.searchET.text.toString(), PAGE_NO)
-                    searchhistory.add(binding.searchET.text.toString())
                 }
                 else
                     Toast.makeText(this, "Type something to search", Toast.LENGTH_SHORT).show()
@@ -105,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+
         binding.VoiceimageView.setOnClickListener {
             val intent: Intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -173,7 +150,6 @@ class MainActivity : AppCompatActivity() {
             val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
             binding.searchET.setText(result?.get(0))
             result?.get(0)?.let { fetchFlickrResponse(it, PAGE_NO) }
-            searchhistory.add(binding.searchET.text.toString())
             issearched=true
 
         }
@@ -182,6 +158,7 @@ class MainActivity : AppCompatActivity() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+
 
     private fun fetchFlickrResponse(query: String, page: Int) {
 
